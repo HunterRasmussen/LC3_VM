@@ -9,7 +9,7 @@
 #include <iostream>
 #include <stdint.h>
 
-const int   MEM_SIZE = 0x10000;
+const int   MEM_SIZE = UINT16_MAX;
 uint16_t memory[MEM_SIZE];
 uint16_t registers[10];
 
@@ -119,6 +119,8 @@ void updateFlags(uint16_t drIndex){
 
 
 int main(int argc, const char * argv[]) {
+    
+    
     
     while (running){
         uint16_t instruction = memory[registers[8]];
