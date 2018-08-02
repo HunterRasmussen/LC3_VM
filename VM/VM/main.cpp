@@ -116,11 +116,22 @@ void updateFlags(uint16_t drIndex){
     }
 }
 
+void read_image(FILE* imageToRead){
+    
+}
+
 
 
 int main(int argc, const char * argv[]) {
     
-    
+
+    if(argc > 0){
+        FILE* imageToRead = fopen(argv[1], "r");  //read only
+        read_image(imageToRead);
+    }
+    else{
+        return 0;
+    }
     
     while (running){
         uint16_t instruction = memory[registers[8]];
