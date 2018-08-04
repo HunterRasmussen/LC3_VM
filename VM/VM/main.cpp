@@ -117,7 +117,13 @@ void updateFlags(uint16_t drIndex){
 }
 
 void read_image(FILE* imageToRead){
-    
+    uint16_t memoryIndex;
+    fread(&memoryIndex, UINT16_MAX, 1, imageToRead); //stores first line in image into memory index
+    while(!feof(imageToRead)){
+        fread(&memory[memoryIndex], UINT16_MAX, 1, imageToRead);
+        memoryIndex++;
+    }
+    return;
 }
 
 
@@ -125,7 +131,7 @@ void read_image(FILE* imageToRead){
 int main(int argc, const char * argv[]) {
     
 
-    if(argc > 0){
+    if(argc > 1){
         FILE* imageToRead = fopen(argv[1], "r");  //read only
         read_image(imageToRead);
     }
@@ -168,6 +174,7 @@ int main(int argc, const char * argv[]) {
         switch (opType) {
             case Op::ADD:
                 if(immFlag){
+                    imm5 = sign_extend(imm5, 5);
                     registers[dr] = registers[sr1] + imm5;
                 }
                 else{
@@ -179,6 +186,7 @@ int main(int argc, const char * argv[]) {
                 
             case Op::AND:
                 if(immFlag){
+                    imm5 = sign_extend(imm5, 5);
                     registers[dr] = registers[sr1] & imm5;
                 }
                 else{
@@ -189,6 +197,7 @@ int main(int argc, const char * argv[]) {
                 
             case Op::BR:
                 if((brFlags & registers[9]) != 0){
+                    pcOffset9 = sign_extend(pcOffset9, 9);
                     registers[8] += pcOffset9;
                 }
                 break;
@@ -201,6 +210,7 @@ int main(int argc, const char * argv[]) {
                 registers[7] = registers[8];
                 
                 if(jsrFlag){
+                    pcOffset11 = sign_extend(pcOffset11, 11);
                     registers[8] += pcOffset11;
                 }
                 else{
@@ -209,12 +219,14 @@ int main(int argc, const char * argv[]) {
                 break;
                 
             case Op::LD:
+                pcOffset9 = sign_extend(pcOffset9, 9);
                 memoryAddress1 = registers[8] + pcOffset9;
                 registers[dr] = memory[memoryAddress1];
                 updateFlags(dr);
                 break;
                 
             case Op::LDI:
+                pcOffset9 = sign_extend(pcOffset9, 9);
                 memoryAddress1 = registers[8] + pcOffset9;
                 memoryAddress2 = memory[memoryAddress1];
                 registers[dr] = memory[memoryAddress2];
@@ -222,12 +234,14 @@ int main(int argc, const char * argv[]) {
                 break;
                 
             case Op::LDR:
+                pcOffset6 = sign_extend(pcOffset6, 6);
                 memoryAddress1 = registers[sr1] + pcOffset6;
                 registers[dr] = memory[memoryAddress1];
                 updateFlags(dr);
                 break;
                 
             case Op::LEA:
+                pcOffset9 = sign_extend(pcOffset9, 9);
                 registers[dr] = registers[8] + pcOffset9;
                 updateFlags(dr);
                 break;
@@ -238,17 +252,20 @@ int main(int argc, const char * argv[]) {
                 break;
                 
             case Op::ST:
+                pcOffset9 = sign_extend(pcOffset9, 9);
                 memoryAddress1 = registers[8] + pcOffset9;
                 memory[memoryAddress1] = registers[dr];
                 break;
                 
             case Op::STI:
+                pcOffset9 = sign_extend(pcOffset9, 9);
                 memoryAddress1 = registers[8] + pcOffset9;
                 memoryAddress2 = memory[memoryAddress1];
                 memory[memoryAddress2] = registers[dr];
                 break;
                 
             case Op::STR:
+                pcOffset6 = sign_extend(pcOffset6, 6);
                 memory[registers[sr1]+pcOffset6] = registers[dr];
                 break;
                 
