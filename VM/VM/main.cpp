@@ -116,11 +116,15 @@ void updateFlags(uint16_t drIndex){
     }
 }
 
+uint16_t swap16(uint16_t x) { return (x << 8) | (x >> 8); }
+
 void read_image(FILE* imageToRead){
     uint16_t memoryIndex;
-    fread(&memoryIndex, UINT16_MAX, 1, imageToRead); //stores first line in image into memory index
+    fread(&memoryIndex, sizeof(uint16_t), 1, imageToRead); //stores first line in image into memory index
+    memoryIndex = swap16(memoryIndex);
     while(!feof(imageToRead)){
-        fread(&memory[memoryIndex], UINT16_MAX, 1, imageToRead);
+        fread(&memory[memoryIndex], sizeof(uint16_t), 1, imageToRead);
+        memory[memoryIndex] = swap16(memory[memoryIndex]);
         memoryIndex++;
     }
     return;
@@ -138,6 +142,8 @@ int main(int argc, const char * argv[]) {
     else{
         return 0;
     }
+    
+    registers[8] = 0x3000;
     
     while (running){
         uint16_t instruction = memory[registers[8]];
@@ -270,7 +276,7 @@ int main(int argc, const char * argv[]) {
                 break;
                 
             case Op::TRAP:
-                trap(instruction);
+                trap(instruction & 0xFF);
                 break;
                 
             default:

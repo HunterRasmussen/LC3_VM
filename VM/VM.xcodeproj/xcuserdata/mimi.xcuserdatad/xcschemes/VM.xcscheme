@@ -65,7 +65,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "/Users/mimi/Documents/Hunter/gitrepos/LC3_VM/VM/VM"
+            argument = "/Users/mimi/Library/Developer/Xcode/DerivedData/VM-ckbwipwoctydxigdehpjhuzsauqf/Build/Products/Debug/rogue.obj"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
