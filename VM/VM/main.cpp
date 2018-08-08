@@ -112,7 +112,7 @@ void updateFlags(uint16_t drIndex){
         registers[9] = NEG;
     }
     else{
-        registers[drIndex] = POS;
+        registers[9] = POS;
     }
 }
 
@@ -202,8 +202,8 @@ int main(int argc, const char * argv[]) {
                 break;
                 
             case Op::BR:
-                if((brFlags & registers[9]) != 0){
-                    pcOffset9 = sign_extend(pcOffset9, 9);
+                 pcOffset9 = sign_extend(pcOffset9, 9);
+                if(brFlags & registers[9]){
                     registers[8] += pcOffset9;
                 }
                 break;
@@ -214,7 +214,6 @@ int main(int argc, const char * argv[]) {
                 
             case Op::JSR:
                 registers[7] = registers[8];
-                
                 if(jsrFlag){
                     pcOffset11 = sign_extend(pcOffset11, 11);
                     registers[8] += pcOffset11;
@@ -270,10 +269,12 @@ int main(int argc, const char * argv[]) {
                 memory[memoryAddress2] = registers[dr];
                 break;
                 
-            case Op::STR:
+            case Op::STR:{
                 pcOffset6 = sign_extend(pcOffset6, 6);
-                memory[registers[sr1]+pcOffset6] = registers[dr];
+                uint16_t address = registers[sr1] + pcOffset6;
+                memory[address] = registers[dr];
                 break;
+            }
                 
             case Op::TRAP:
                 trap(instruction & 0xFF);
